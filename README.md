@@ -241,8 +241,8 @@ Chevron
 Time taken by function: 2 ms
 ```
 
-- What is the runtime of your algorithm? 8 ms 
-- (Optional) Can you do it faster than `O(n)`? 
+- What is the runtime of your algorithm? O(n) because it must traverse all the nodes in the map and compare each node's name with the input string.
+- (Optional) Can you do it faster than `O(n)`?  It could be done faster than O(n) if the data structure was not an unordered map. 
 
 ## Item 2-1: Find the place's coordinates in the Map (Phase 1)
 
