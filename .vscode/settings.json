@@ -92,9 +92,14 @@
     "*.tcc": "cpp",
     "memory_resource": "cpp",
     "stop_token": "cpp",
-    "cfloat": "cpp"
+    "cfloat": "cpp",
+    "__verbose_abort": "cpp",
+    "execution": "cpp",
+    "print": "cpp",
+    "variant": "cpp"
   },
   "lldb.displayFormat": "auto",
   "lldb.dereferencePointers": true,
   "lldb.showDisassembly": "auto",
+  "C_Cpp.errorSquiggles": "disabled",
 }

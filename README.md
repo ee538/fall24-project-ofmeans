@@ -241,8 +241,8 @@ Chevron
 Time taken by function: 2 ms
 ```
 
-- What is the runtime of your algorithm? 
-- (Optional) Can you do it faster than `O(n)`?
+- What is the runtime of your algorithm? 8 ms 
+- (Optional) Can you do it faster than `O(n)`? 
 
 ## Item 2-1: Find the place's coordinates in the Map (Phase 1)
 
