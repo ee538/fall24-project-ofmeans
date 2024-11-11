@@ -75,12 +75,12 @@ std::string TrojanMap::GetID(const std::string &name)
 std::pair<double, double> TrojanMap::GetPosition(std::string name)
 {
   std::pair<double, double> results(-1, -1);
-
+  // traverse all nodes on the map
   for (const auto &entry : data)
   {
-    const Node &node = entry.second;  // retrieve current node
+    const Node &node = entry.second; // retrieve current node
 
-    // if node matches name
+    // if we find this node’s name, return its position
     if (node.name == name)
     {
       results.first = node.lat;  // latitude
@@ -132,38 +132,38 @@ std::vector<std::string> TrojanMap::Autocomplete(std::string name)
   }
 
   // convert input string to lowercase
-  for (size_t i = 0; i < name.length(); i++)
+  for (size_t i = 0; i < name.size(); ++i)
   {
-    name[i] = tolower(name[i]); // found tolower() funciton on geeksforgeeks.org
+    name[i] = tolower(name[i]); // found tolower function on geeksforgeeks.org
   }
 
-  // iterate through all nodes in data map
+  // traverse all nodes on the map
   for (const auto &entry : data)
   {
-    const Node &node = entry.second;   // retrieve current node
-    std::string node_name = node.name; // retreieve name of current node
+    const Node &node = entry.second;
 
-    // convert node name --> lowercase
-    std::transform(node_name.begin(), node_name.end(), node_name.begin(), ::tolower);
-
-    // check if node name starts with string
-    bool match = true; // assume initially matches
-    for (size_t i = 0; i < name.length(); i++)
+    // convert node name string to lowercase
+    std::string node_name = node.name;
+    for (size_t i = 0; i < node_name.size(); ++i)
     {
-      if (node_name[i] != name[i]) // if does not match, switch to false
-      {
-        match = false;
-        break; // exit loop since mismatch found
-      }
+      node_name[i] = tolower(node_name[i]);
     }
 
-    // if match found, add to vector
-    if (match)
+    // if the size of input is greater than the size of node's name, we skip this node
+    if (node_name.size() < name.size())
     {
+      continue;
+    }
+
+    // compare two strings, the input one and the substr of node's name starting at the
+    // beginning of name with the same length of input, and check whether they are equal or not
+    if (node_name.substr(0, name.size()) == name)
+    {
+      // if they are, push the node's name into result vector
       results.push_back(node.name);
     }
   }
-  // return vector list
+
   return results;
 }
 
