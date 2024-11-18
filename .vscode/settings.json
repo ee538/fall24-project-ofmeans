@@ -96,7 +96,8 @@
     "__verbose_abort": "cpp",
     "execution": "cpp",
     "print": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "charconv": "cpp"
   },
   "lldb.displayFormat": "auto",
   "lldb.dereferencePointers": true,
