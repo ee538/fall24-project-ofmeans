@@ -393,18 +393,16 @@ std::vector<std::string> TrojanMap::GetLocationRegex(std::regex location)
   // res stores ids of matching locations
   std::vector<std::string> res;
 
-  // loop through all nodes in map
   for (const auto &pair : data)
   {
-    const std::string &name = pair.second.name; // location name
+    const std::string &name = pair.second.name;
 
-    if (std::regex_search(name, location)) // found regex_search function on geeksforgeeks.org
+    if (std::regex_match(name, location))
     {
-      res.push_back(pair.first); // add id of matching location
+      res.push_back(pair.first);
     }
   }
 
-  // return all location ids that match that regular expression
   return res;
 }
 
@@ -659,6 +657,56 @@ std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravelingTro
     std::vector<std::string> location_ids)
 {
   std::pair<double, std::vector<std::vector<std::string>>> records;
+
+  // step 1: calculate the total number of tours
+  int num_tours = 1;
+  for (int i = 2; i <= location_ids.size(); ++i)
+    num_tours *= i;
+  std::cout << "total number of permutations: " << num_tours << std::endl;
+
+  // step 2: draw and list all the possible tours
+  std::vector<std::string> best_path;
+  double min_distance = std::numeric_limits<double>::max();
+
+  // define starting point
+  std::string start_point = location_ids[0];
+  std::vector<std::string> remaining_ids(location_ids.begin() + 1, location_ids.end());
+
+  std::sort(remaining_ids.begin(), remaining_ids.end()); // sort to generate permutations in order
+  bool has_more_permutations = true;
+
+  // loop through all permutations
+  while (has_more_permutations)
+  {
+    // create current path
+    std::vector<std::string> current_path = {start_point};
+    current_path.insert(current_path.end(), remaining_ids.begin(), remaining_ids.end());
+    current_path.push_back(start_point); // return to the starting point
+
+    // step 3: calculate the distance of each tour
+    double current_distance = CalculatePathLength(current_path);
+    records.second.push_back(current_path); // save the current path
+
+    // step 4: choose the shortest tour, this is the optimal solution
+    if (current_distance < min_distance)
+    {
+      min_distance = current_distance;
+      best_path = current_path;
+    }
+    else if (current_distance == min_distance)
+    {
+      // break ties
+      if (current_path < best_path)
+        best_path = current_path;
+    }
+
+    // move to next permutation
+    has_more_permutations = std::next_permutation(remaining_ids.begin(), remaining_ids.end());
+  }
+
+  records.first = min_distance;
+  records.second.push_back(best_path);
+
   return records;
 }
 
@@ -667,6 +715,71 @@ std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravelingTro
     std::vector<std::string> location_ids)
 {
   std::pair<double, std::vector<std::vector<std::string>>> records;
+
+  // initialize the shortest distance
+  records.first = std::numeric_limits<double>::max();
+  std::vector<std::string> best_path;
+
+  // fix starting point
+  std::string start_point = location_ids[0];
+  std::vector<std::string> current_path = {start_point};
+  std::vector<bool> visited(location_ids.size(), false);
+  visited[0] = true;
+  double current_distance = 0.0;
+
+  auto backtrack = [&](auto &&self, int level) -> void
+  {
+    // edge case: all locations visited
+    if (level == location_ids.size())
+    {
+      // complete path by returning to start
+      double return_distance = CalculateDistance(current_path.back(), start_point);
+      current_distance += return_distance;
+      current_path.push_back(start_point);
+      records.second.push_back(current_path);
+
+      // update shortest path if needed
+      if (current_distance < records.first ||
+          (current_distance == records.first && current_path < best_path))
+      {
+        records.first = current_distance;
+        best_path = current_path;
+      }
+
+      // backtrack
+      current_path.pop_back();
+      current_distance -= return_distance;
+      return;
+    }
+
+    // recursive case: unvisited locations
+    for (int i = 1; i < location_ids.size(); ++i)
+    {
+      if (!visited[i])
+      {
+        // visit location
+        visited[i] = true;
+        current_path.push_back(location_ids[i]);
+        current_distance += CalculateDistance(current_path[current_path.size() - 2], location_ids[i]);
+
+        if (current_distance < records.first)
+        {
+          self(self, level + 1);
+        }
+
+        // backtrack (undo visit)
+        current_distance -= CalculateDistance(current_path[current_path.size() - 2], location_ids[i]);
+        current_path.pop_back();
+        visited[i] = false;
+      }
+    }
+  };
+
+  // start backtracking from first location
+  backtrack(backtrack, 1);
+
+  records.second.push_back(best_path);
+
   return records;
 }
 
@@ -675,6 +788,57 @@ std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravelingTro
     std::vector<std::string> location_ids)
 {
   std::pair<double, std::vector<std::vector<std::string>>> records;
+  double best_distance = std::numeric_limits<double>::max(); // shortest distance
+  bool optimization = true;
+
+  std::vector<std::string> route = location_ids;
+  route.push_back(route[0]);
+
+  // store initial path
+  records.second.push_back(route);
+
+  // calculate distance of initial path
+  auto calculateTotalDistance = [&](const std::vector<std::string> &path)
+  {
+    double total_distance = 0;
+    for (size_t i = 0; i < path.size() - 1; i++)
+    {
+      total_distance += CalculateDistance(path[i], path[i + 1]);
+    }
+    return total_distance;
+  };
+  best_distance = calculateTotalDistance(route);
+  records.first = best_distance;
+
+  // 2-opt optimization
+  while (optimization)
+  {
+    optimization = false;
+
+    for (size_t i = 1; i < route.size() - 2; i++)
+    {
+      // start from second node
+      for (size_t j = i + 1; j < route.size() - 1; j++)
+      {
+        std::vector<std::string> new_route = route;
+        std::reverse(new_route.begin() + i, new_route.begin() + j + 1);
+
+        // calculate new route
+        double new_distance = calculateTotalDistance(new_route);
+
+        if (new_distance < best_distance)
+        {
+          // updates
+          best_distance = new_distance;
+          route = new_route;
+          optimization = true;
+          
+              records.second.push_back(route);
+          records.first = best_distance;
+        }
+      }
+    }
+  }
   return records;
 }
 
@@ -683,6 +847,7 @@ std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravelingTro
     std::vector<std::string> location_ids)
 {
   std::pair<double, std::vector<std::vector<std::string>>> records;
+
   return records;
 }
 
@@ -767,7 +932,7 @@ std::vector<std::string> TrojanMap::DeliveringTrojan(
     std::vector<std::string> &locations,
     std::vector<std::vector<std::string>> &dependencies)
 {
-  std::vector<std::string> result;                                 // store feasible route
+  std::vector<std::string> result;                                 // store route
   std::unordered_map<std::string, std::vector<std::string>> graph; // graph to represent dependencies
   std::unordered_map<std::string, int> tasks;                      // store tasks blocking each location
 
@@ -778,7 +943,7 @@ std::vector<std::string> TrojanMap::DeliveringTrojan(
     tasks[location] = 0;
   }
 
-  // build the graph from dependencies
+  // build graph from dependencies
   for (const auto &dependency : dependencies)
   {
     std::string from = dependency[0]; // location that must be visited first
@@ -948,6 +1113,50 @@ bool TrojanMap::CycleDetection(std::vector<std::string> &subgraph, std::vector<d
 std::vector<std::string> TrojanMap::FindNearby(std::string attributesName, std::string name, double r, int k)
 {
   std::vector<std::string> res;
+  // check if the given location name exists in map
+  std::string start_id = GetID(name);
+  if (start_id.empty())
+  {
+    return res;
+  }
+
+  std::vector<std::pair<std::string, double>> nearby_locations; // store nearby locations
+
+  // iterate through nodes
+  for (auto &pair : data)
+  {
+    std::string id = pair.first;
+    Node location = pair.second;
+
+    // skip starting location(s) that do not match attribute
+    if (id == start_id || location.attributes.count(attributesName) == 0)
+    {
+      continue;
+    }
+
+    // calculate distance between the start and current
+    double distance = CalculateDistance(start_id, id);
+
+    // check if within radius
+    if (distance <= r)
+    {
+      nearby_locations.push_back({id, distance});
+    }
+  }
+
+  // sort by distance
+  std::sort(nearby_locations.begin(), nearby_locations.end(),
+            [](const std::pair<std::string, double> &a, const std::pair<std::string, double> &b)
+            {
+              return a.second < b.second;
+            });
+
+  // add up to k locations to result
+  for (size_t i = 0; i < nearby_locations.size() && res.size() < static_cast<size_t>(k); i++)
+  {
+    res.push_back(nearby_locations[i].first);
+  }
+
   return res;
 }
 
@@ -962,6 +1171,80 @@ std::vector<std::string> TrojanMap::TrojanPath(
     std::vector<std::string> &location_names)
 {
   std::vector<std::string> res;
+  double min_length = std::numeric_limits<double>::max();
+
+  // step 1: convert location names to ids
+  std::vector<std::string> location_ids;
+  for (const auto &name : location_names)
+  {
+    std::string id = GetID(name);
+    if (id.empty())
+    {
+      return {};
+    }
+    location_ids.push_back(id);
+  }
+
+  // step 2: precompute shortest paths between all pairs of nodes (lecture content: path-finding optimization)
+  std::unordered_map<std::string, std::unordered_map<std::string, std::pair<double, std::vector<std::string>>>> shortest_paths;
+  for (const auto &start : location_ids)
+  {
+    for (const auto &end : location_ids)
+    {
+      if (start != end)
+      {
+        auto path = CalculateShortestPath_Dijkstra(GetName(start), GetName(end));
+        double distance = CalculatePathLength(path);
+        shortest_paths[start][end] = {distance, path};
+      }
+    }
+  }
+
+  // step 3: prep for permutations
+  std::sort(location_ids.begin(), location_ids.end());
+  bool has_more_permutations = true;
+
+  // step 4: evaluate each permutations
+  while (has_more_permutations)
+  {
+    double current_length = 0.0;
+    std::vector<std::string> current_path;
+
+    // calculate path length
+    for (size_t i = 0; i < location_ids.size() - 1; ++i)
+    {
+      const auto &start = location_ids[i];
+      const auto &end = location_ids[i + 1];
+
+      if (shortest_paths[start].find(end) != shortest_paths[start].end())
+      {
+        current_length += shortest_paths[start][end].first;
+
+        // build full path
+        if (current_path.empty())
+        {
+          current_path.insert(current_path.end(),
+                              shortest_paths[start][end].second.begin(),
+                              shortest_paths[start][end].second.end());
+        }
+        else
+        {
+          current_path.insert(current_path.end(),
+                              shortest_paths[start][end].second.begin() + 1,
+                              shortest_paths[start][end].second.end());
+        }
+      }
+    }
+
+    // update result if shorter path found
+    if (current_length < min_length)
+    {
+      min_length = current_length;
+      res = current_path;
+    }
+
+    has_more_permutations = std::next_permutation(location_ids.begin(), location_ids.end());
+  }
   return res;
 }
 
@@ -974,6 +1257,65 @@ std::vector<std::string> TrojanMap::TrojanPath(
 std::vector<bool> TrojanMap::Queries(const std::vector<std::pair<double, std::vector<std::string>>> &q)
 {
   std::vector<bool> ans(q.size());
+  // process each query
+  for (size_t query_idx = 0; query_idx < q.size(); ++query_idx)
+  {
+    double gas_limit = q[query_idx].first; // max cap of gas tank
+    const auto &locations = q[query_idx].second;
+
+    // validate input locations
+    if (locations.size() != 2)
+    {
+      ans[query_idx] = false;
+      continue;
+    }
+
+    // get ids
+    std::string start_id = GetID(locations[0]);
+    std::string destination_id = GetID(locations[1]);
+
+    // if location DNE --> path invalid
+    if (start_id.empty() || destination_id.empty())
+    {
+      ans[query_idx] = false;
+      continue;
+    }
+
+    // bfs to check if there's a valid path under gas constraints
+    std::unordered_set<std::string> visited_nodes; // track visited nodes
+    std::queue<std::string> to_explore;            // nodes to process
+    to_explore.push(start_id);
+
+    bool path_found = false;
+
+    while (!to_explore.empty())
+    {
+      std::string current_node = to_explore.front();
+      to_explore.pop();
+
+      if (current_node == destination_id) // destination reached
+      {
+        path_found = true;
+        break;
+      }
+
+      visited_nodes.insert(current_node); // mark as visited
+
+      // explore neighbors
+      for (const auto &neighbor : data[current_node].neighbors)
+      {
+        // ensure neighbor hasn't been visited AND is within gas limit
+        if (visited_nodes.find(neighbor) == visited_nodes.end() &&
+            CalculateDistance(current_node, neighbor) <= gas_limit)
+        {
+          to_explore.push(neighbor);
+        }
+      }
+    }
+
+    ans[query_idx] = path_found;
+  }
+
   return ans;
 }
 

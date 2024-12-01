@@ -8,9 +8,10 @@
 void MapUI::PrintMenu()
 {
   std::string menu =
+      " \n"
       "TrojanMap Menu\n"
       "**************************************************************\n"
-      "* Enter the function number (1-11) to start:                  \n"
+      "* Enter the function number (1-13) to start:                  \n"
       "* 1. Autocomplete                                             \n"
       "* 2. Find the location                                        \n"
       "* 3. Find all location categories                             \n"
@@ -956,7 +957,7 @@ void MapUI::DynamicPrintMenu()
   init_pair(4, COLOR_BLUE, COLOR_BLACK);
 
   std::string menu =
-      "Torjan Map\n"
+      "Trojan Map\n"
       "**************************************************************\n"
       "* Select the function you want to execute.                    \n"
       "* 1. Autocomplete                                             \n"
