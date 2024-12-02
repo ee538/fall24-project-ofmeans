@@ -662,7 +662,6 @@ std::pair<double, std::vector<std::vector<std::string>>> TrojanMap::TravelingTro
   int num_tours = 1;
   for (int i = 2; i <= location_ids.size(); ++i)
     num_tours *= i;
-  std::cout << "total number of permutations: " << num_tours << std::endl;
 
   // step 2: draw and list all the possible tours
   std::vector<std::string> best_path;

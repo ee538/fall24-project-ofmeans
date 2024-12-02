@@ -32,6 +32,7 @@ class MapUI {
   // Create the Dynamic menu.
   #ifdef NCURSES
   void DynamicPrintMenu();
+
   #endif
   // Visualization
   // Plot the map

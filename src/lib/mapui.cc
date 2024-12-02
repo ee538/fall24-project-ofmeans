@@ -124,8 +124,14 @@ void MapUI::PrintMenu()
     {
       std::cout << "\"" << x << "\"" << ", ";
     }
+    std::cout << std::endl;
+
+    menu = "**************************************************************\n";
+
+    std::cout << menu;
     std::cout << "Time taken by function: " << duration.count() / 1000 << " ms" << std::endl
               << std::endl;
+
     PrintMenu();
     break;
   }
@@ -596,7 +602,7 @@ void MapUI::PrintMenu()
       std::cout << menu;
       std::string input2;
       getline(std::cin, input2);
-      menu = "Please input the volumn of the gas tank:";
+      menu = "Please input the volume of the gas tank:";
       std::cout << menu;
       std::string input3;
       getline(std::cin, input3);
