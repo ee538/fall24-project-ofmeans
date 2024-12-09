@@ -23,7 +23,7 @@ void MapUI::PrintMenu()
       "* 9. Traveling salesman problem                               \n"
       "* 10. Find Nearby                                             \n"
       "* 11. Find Path to Visit All Places                           \n"
-      "* 12. Check Exist of Path with Constrain                      \n"
+      "* 12. Check If Path Exists with Constraint                    \n"
       "* 13. Exit                                                    \n"
       "**************************************************************\n";
   std::cout << menu;
@@ -588,7 +588,7 @@ void MapUI::PrintMenu()
   {
     menu =
         "**************************************************************\n"
-        "* 12. Check Exist of Path with Constrain                      \n"
+        "* 12. Check If Path Exists with Constraint                     \n"
         "**************************************************************\n";
     std::cout << menu << std::endl;
     std::vector<std::pair<double, std::vector<std::string>>> Q;

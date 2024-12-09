@@ -21,7 +21,7 @@ Data Structure(s) Involved
 - Vector (output that stores list of names)
 
 Runtime
-The runtime is O(n) because it must traverse all the nodes in the map and compare each node's name with the input string. If a different data structure, such as a tree, was used then the runtime could be faster than O(n).
+- The runtime is O(n) because it must traverse all the nodes in the map and compare each node's name with the input string. If a different data structure, such as a tree, was used then the runtime could be faster than O(n).
 
 | Input Character # | Output Location # | Time | 
 | -------------------- | -------------------- |-----|
@@ -45,7 +45,7 @@ Data Structure(s) Involved
 - Pair (output)
 
 Runtime
-The runtime is O(n) because it iterates through all nodes.
+- The runtime is O(n) because it iterates through all nodes.
 
 Time taken by function: 10 ms
 
@@ -64,7 +64,7 @@ Data Structure(s) Involved
 - vector (categories)
 
 Runtime
-The runtime is O(nxm) because the function iterates over all nodes and the attributes for each node. 
+- The runtime is O(nxm) because the function iterates over all nodes and the attributes for each node. 
 
 Time taken by function: 5 ms
 
@@ -86,7 +86,7 @@ Data Structure(s) Involved
 - vector (output)
 
 Runtime
-The runtime is O(nxm) because the function iterates over all nodes and the attributes for each node. 
+- The runtime is O(nxm) because the function iterates over all nodes and the attributes for each node. 
 
 
 | Input Category       |   Output Location #  |Time | 
@@ -111,14 +111,14 @@ Data Structure(s) Involved
 - vector (output)
 
 Runtime
-The runtime is O(nxm) where n is the number of nodes in the map, and m is the average length of the node names being matched.
+- The runtime is O(nxm) where n is the number of nodes in the map, and m is the average length of the node names being matched.
 
 Time taken by function: 40 ms
 
 ## Function 6: Calculate Shortest Path 
 This function calculates the shortest path between two locations using two algorithms: Dijkstra's and Bellman-Ford. Dijkstra's is a greedy algorithm efficient for graphs without negative weights, while Bellman-Ford handles graphs with negative weights and allows early termination
 
-# Dijkstra
+### Dijkstra
 Algorithm Architecture
 - Retrieve the IDs of the starting and target locations using GetID()
 - Initialize a priority queue (std::priority_queue) to store nodes with their current shortest distances
@@ -133,9 +133,9 @@ Data Structure(s) Involved
 - Unordered map 
 
 Runtime
-The runtime is O((m+n)logn) because it processes each node (n) and each edge (m) while maintaining a priority queue, where each insertion and deletion operation takes O(log(n)).
+- The runtime is O((m+n)logn) because it processes each node (n) and each edge (m) while maintaining a priority queue, where each insertion and deletion operation takes O(log(n)).
 
-# Bellman-Ford
+### Bellman-Ford
 
 Algorithm Architecture
 - Retrieve the IDs of the starting and target locations using GetID()
@@ -149,9 +149,9 @@ Data Structure(s) Involved
 - Unordered map
 
 Runtime
-The runtime is O(m✕n) because it relaxes all edges (m) for up to n−1 iterations.
+- The runtime is O(m✕n) because it relaxes all edges (m) for up to n−1 iterations.
 
-# Runtime Comparison
+### Runtime Comparison
 
 | Point A → Point B                 | Dijkstra (ms) | Bellman-Ford (ms) | Path Distance (miles) |
 |-----------------------------------|---------------|-------------------|-----------------------|
@@ -192,7 +192,7 @@ Data Structure(s) Involved
 - Square 
 
 Runtime
-The runtime is the same as DFS, O(n+m)
+- The runtime is the same as DFS, O(n+m)
 
 Time taken by function: 0 ms
 
@@ -213,22 +213,14 @@ Data Structure(s) Involved
 - Vector
 
 Runtime
-The runtime is O(n+m), where n is the number of locations and m is the number of dependencies.  
+- The runtime is O(n+m), where n is the number of locations and m is the number of dependencies.
 
-| Number of nodes      | Time (ms) |
-| -------------------- | ----------|
-|                 5     |     0  |
-|                 6  |       |
-|                 7    |       |
-|                 8   |       |
-|                 9    |       |
-|                 10    |       |
-
+Note: However, I understand that as the input size grows, the runtime complexity increases significantly. Specifically, I recognize that the runtime for topological sort is dependent on traversing the nodes and edges of the graph, which scales with the size of the graph.
 
 ## Function 9: Traveling Salesman
 This function finds the shortest round-trip route visiting all given locations using three different methods: Brute Force, Backtracking, and 2-opt Heuristic. 
 
-# Brute Force
+### Brute Force
 Algorithm Architecture
 - Generate all permutations of the locations except the starting point
 - Add the starting point at the beginning and end of each permutation to complete the round trip
@@ -241,9 +233,9 @@ Data Structure(s) Involved
 - Pair 
 
 Runtime
-The runtime is O(n!) because it evaluates all permutations of n locations
+- The runtime is O(n!) because it evaluates all permutations of n locations
 
-# Backtracking
+### Backtracking
 Algorithm Architecture
 - Use recursive backtracking to build paths incrementally
 - Prune paths early if their current distance exceeds the shortest distance found so far
@@ -256,9 +248,9 @@ Data Structure(s) Involved
 - Stack
 
 Runtime
-The runtime is O(n!) and avoids evaluating many paths by identifying and skipping "bad" paths early. 
+- The runtime is O(n!) and avoids evaluating many paths by identifying and skipping "bad" paths early. 
 
-# 2-opt
+### 2-opt
 Algorithm Architecture
 - Start with an initial path (visiting nodes in the order given)
 - Iteratively optimize the path by swapping two edges and checking if the total distance improves
@@ -270,9 +262,9 @@ Data Structure(s) Involved
 - String
 
 Runtime
-The runtime is O(n^2) where the number of iterations depends on the input size and the starting path.
+- The runtime is O(n^2) where the number of iterations depends on the input size and the starting path.
 
-# Comparison 
+### Comparison 
 | Number of Nodes | Brute-Force (ms) | Backtracking (ms) | 2-opt (ms) |
 |------------------|------------------|-------------------|------------|
 | 4                | 0                | 0                 | 0          |
@@ -301,9 +293,9 @@ Data Structure(s) Involved
 - String
 
 Runtime
-The runtime is O(n+m(log(m))) because it iterates through all nodes to filter by distance (O(n)) and then sorts the m nodes within the radius by distance O(mx(log(m))).
+- The runtime is O(n+m(log(m))) because it iterates through all nodes to filter by distance (O(n)) and then sorts the m nodes within the radius by distance O(mx(log(m))).
 
-# When searching for restaurants with Dulce as the input location 
+### When searching for restaurants with Dulce as the input location 
 | Radius (r) | Maximum Results (k) | Time (ms) | Output                             |
 |------------|----------------------|-----------|------------------------------------|
 | 1.0        | 5                    | 31        | 1 Kobunga Korean Grill            |
@@ -356,7 +348,7 @@ Data Structure(s) Involved
 - String
 
 Runtime
-The runtime is O(n!) because the funciton evaluates all n! permutations of the input locations.
+- The runtime is O(n!) because the funciton evaluates all n! permutations of the input locations.
 
 | Number of Nodes | Time (ms) |
 |------------------|-----------|
@@ -397,7 +389,7 @@ Data Structure(s) Involved
 - Vector 
 
 Runtime
-The runtime is O(n+m) because it uses BFS to check path feasibility within the constraint (amount of gas).
+- The runtime is O(n+m) because it uses BFS to check path feasibility within the constraint (amount of gas).
 
 | Start Location         | Destination          | Gas Tank Volume (gallons) | Path Exists |
 |-------------------------|----------------------|---------------------------|-------------|
